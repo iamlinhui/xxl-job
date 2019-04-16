@@ -8,6 +8,7 @@ import com.xxl.job.core.biz.AdminBiz;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.annotation.Resource;
@@ -59,6 +60,7 @@ public class XxlJobAdminConfig implements InitializingBean{
     @Resource
     private AdminBiz adminBiz;
     @Resource
+    @Lazy
     private JavaMailSender mailSender;
 
     public String getLoginUsername() {
