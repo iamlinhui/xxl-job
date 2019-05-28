@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author xuxueli 2018-10-28 00:38:13
  */
 @SpringBootApplication
-@EnableApolloConfig(value = {"application", "bootstrap"})
+@EnableApolloConfig
 @MapperScan(value = "com.xxl.job.admin.dao")
 public class XxlJobAdminApplication {
 

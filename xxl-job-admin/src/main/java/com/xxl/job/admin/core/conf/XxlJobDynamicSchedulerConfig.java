@@ -1,13 +1,18 @@
 package com.xxl.job.admin.core.conf;
 
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.spring.annotation.ApolloConfig;
 import com.xxl.job.admin.core.schedule.XxlJobDynamicScheduler;
 import org.quartz.Scheduler;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import javax.sql.DataSource;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author xuxueli 2018-10-28 00:18:17
@@ -15,8 +20,11 @@ import javax.sql.DataSource;
 @Configuration
 public class XxlJobDynamicSchedulerConfig {
 
+    @ApolloConfig(value = "quartz")
+    private Config quartzConfig;
+
     @Bean
-    public SchedulerFactoryBean getSchedulerFactoryBean(DataSource dataSource){
+    public SchedulerFactoryBean getSchedulerFactoryBean(@Qualifier("dataSource") DataSource dataSource){
 
         SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
         schedulerFactory.setDataSource(dataSource);
@@ -24,7 +32,15 @@ public class XxlJobDynamicSchedulerConfig {
         schedulerFactory.setStartupDelay(20);                   // 延时启动，应用启动成功后在启动
         schedulerFactory.setOverwriteExistingJobs(true);        // 覆盖DB中JOB：true、以数据库中已经存在的为准：false
         schedulerFactory.setApplicationContextSchedulerContextKey("applicationContext");
-        schedulerFactory.setConfigLocation(new ClassPathResource("quartz.properties"));
+
+        Properties quartzProperties = new Properties();
+        Set<String> propertyNames = quartzConfig.getPropertyNames();
+
+        for (String propertyName : propertyNames) {
+            String propertyValue = quartzConfig.getProperty(propertyName, "");
+            quartzProperties.put(propertyName, propertyValue);
+        }
+        schedulerFactory.setQuartzProperties(quartzProperties);
 
         return schedulerFactory;
     }
